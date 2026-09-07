@@ -1,142 +1,124 @@
-# CompassCar API
+# CompassCar
 
-## Descrição
+API e frontend para gerenciamento de veículos disponíveis para locação.
 
-A **CompassCar API** é uma aplicação backend desenvolvida para gerenciar a locação de veículos. A API permite realizar operações de **CRUD** (Create, Read, Update, Delete) para gerenciar os veículos disponíveis para aluguel, sem o uso de frameworks externos, utilizando apenas **Node.js** e **MySQL**.
+## Funcionalidades atuais
 
-## Funcionalidades
+- Cadastro de veículos com marca, modelo, ano e itens.
+- Listagem paginada com filtros por marca, modelo e ano mínimo.
+- Consulta de detalhes por ID, incluindo os itens do veículo.
+- Edição parcial e exclusão de veículos.
+- Validação de campos obrigatórios, intervalo de ano e duplicidade.
+- Frontend com cadastro, edição, filtros, paginação, detalhes e exclusão.
+- Landing page em `frontend/index.html`.
+- Modo memória para execução sem MySQL, com dados mantidos apenas enquanto o servidor estiver ligado.
 
-- **Cadastrar veículos**: Adicionar novos carros com informações como modelo, marca, ano e disponibilidade.
-- **Listar veículos**: Visualizar todos os carros disponíveis no sistema.
-- **Atualizar informações de veículos**: Editar os dados de um carro, incluindo disponibilidade.
-- **Remover veículos**: Excluir um carro do sistema.
+## Tecnologias
 
-## Tecnologias Utilizadas
-
-- **Node.js**: Plataforma de desenvolvimento para construção da API.
-- **MySQL**: Banco de dados relacional para armazenar as informações dos veículos.
-- **Módulos nativos do Node.js**: Desenvolvido sem o uso de frameworks como Express ou ORM.
+- Node.js e Express
+- MySQL com `mysql2`
+- HTML, CSS e JavaScript no frontend
 
 ## Pré-requisitos
 
-- **Node.js** instalado
-- **MySQL** configurado
+- Node.js instalado
+- MySQL configurado para usar a persistência no banco
 
-## Instalação e Execução
+## Instalação e execução
 
-**Clonar o Repositório**
+```bash
+npm install
+npm run dev
+```
 
-**Copiar código chave SSH**:
+O servidor inicia na porta definida por `PORT` ou `DB_PORT`; se nenhuma for informada, usa a porta `3000`.
 
-git clone git@github.com:WagnerSuzano2/Compasscar.git
+Quando `DB_HOST` não está configurado, a aplicação usa automaticamente o modo memória. Para usar MySQL, configure no `.env`:
 
-## Pré-Instalar Dependências
+```env
+DB_HOST=localhost
+DB_USER=seu_usuario
+DB_PASSWORD=sua_senha
+DB_NAME=compasscar
+PORT=3000
+```
 
-**npm install**
+Crie as tabelas executando [`db/dump.sql`](db/dump.sql) no MySQL.
 
-## Configurar Variáveis de Ambiente
+Com o servidor em execução:
 
-Renomeie o arquivo **.env.example** para **.env** e configure as variáveis necessárias (credenciais do banco de dados, porta, etc).
+- API: `http://localhost:3000`
+- Sistema: `http://localhost:3000/app.html`
+- Landing page: `http://localhost:3000/index.html`
 
-## Configurar Banco de Dados
-
-Crie o banco de dados compasscar no MySQL.
-
-Execute o arquivo **dump.sql** fornecidos para criar o banco e as tabelas cars e cars_items.
-
-## Executar a Aplicação
-
-**npm start**
-
-## Testar a API
-
-**Utilize ferramentas como Postman ou Insomnia para interagir com os endpoints da API.**
+O frontend também pode ser servido separadamente. Nesse caso, informe em `app.html` a URL base da API; o valor é salvo no navegador. A API possui CORS habilitado para permitir esse uso.
 
 ## Endpoints
 
-**Cadastro de Carros**
+### Cadastrar veículo
 
-**POST /api/v1/cars**
+`POST /api/v1/cars`
 
-Permite cadastrar um novo carro no sistema.
+```json
+{
+  "brand": "Volkswagen",
+  "model": "GOL G5",
+  "year": 2021,
+  "items": ["Ar-condicionado", "Direção hidráulica"]
+}
+```
 
-Exemplo de Requisição:
+### Listar veículos
 
-- `brand`: "Volkswagen",
+`GET /api/v1/cars`
 
-- `model`: "GOL G5",
+Parâmetros opcionais:
 
-- `year`: 2021,
+- `page`: página atual, padrão `1`.
+- `limit`: registros por página, padrão `5`, entre `1` e `10`.
+- `brand`: filtro parcial da marca.
+- `model`: filtro parcial do modelo.
+- `year`: ano mínimo.
 
-- `items`: ["Ar-condicionado", "Direção Hidráulica", "Trava Elétrica"]
+Exemplo: `/api/v1/cars?page=1&limit=2&brand=vol&model=gol&year=2015`
 
-## Listar Carros
+### Consultar veículo
 
-GET /api/v1/cars
+`GET /api/v1/cars/:id`
 
-Lista os carros cadastrados com opções de paginação e filtros.
+Retorna os dados do veículo e seus itens.
 
-**Parâmetros de Query Opcionais**:
+### Atualizar veículo
 
-- `page`: Número da página (padrão: 1)
-- `limit`: Número de registros por página (padrão: 5, mínimo: 1, máximo: 10)
-- `brand`: Filtrar por parte do nome da marca
-- `model`: Filtrar por parte do nome do modelo
-- `year`: Filtrar por carros com anos a partir do valor enviado
-  **Exemplo de Requisição:**
-  /api/v1/cars?page=1&limit=2&brand=vol&model=gol&year=2015
+`PATCH /api/v1/cars/:id`
 
-## Buscar Carro por ID
+Todos os campos são opcionais. O corpo pode conter `brand`, `model`, `year` e `items`.
 
-GET /api/v1/cars/:id
+### Excluir veículo
 
-Obtém os detalhes de um carro específico pelo ID.
+`DELETE /api/v1/cars/:id`
 
-## Atualizar Carro
+Remove o veículo pelo ID.
 
-**PATCH** `/api/v1/cars/:id`
+## Banco de dados
 
-Atualiza as informações de um carro existente. Todos os campos são opcionais.
+O banco `compasscar` possui as tabelas:
 
-### Exemplo de Requisição:
+- `cars`: `id`, `brand`, `model` e `year`.
+- `cars_items`: `id`, `name` e `car_id`, relacionado a `cars.id`.
 
-- `brand`: "Volkswagen",
-- `model`: "GOL",
-- `year`: 2015,
-- `items`: ["Airbag", "Freios ABS"]
+## Frontend
 
-## Excluir Carro
+Os arquivos da interface estão em `frontend/`:
 
-**DELETE /api/v1/cars/:id**
+- `index.html`: landing page.
+- `app.html`: sistema de gerenciamento.
+- `css/styles.css`: estilos.
+- `js/app.js`: integração com a API.
 
-Exclui um carro e seus itens associados do sistema.
+## Convenções de commit
 
-## Estrutura do Banco de Dados
-
-**Database**: `compasscar`
-
-### Tabela `cars`:
-
-| Coluna  | Tipo    | Descrição           |
-| ------- | ------- | ------------------- |
-| `id`    | INT     | Chave Primária (PK) |
-| `brand` | VARCHAR | Marca do carro      |
-| `model` | VARCHAR | Modelo do carro     |
-| `year`  | INT     | Ano de fabricação   |
-
-### Tabela `cars_items`:
-
-| Coluna   | Tipo    | Descrição                             |
-| -------- | ------- | ------------------------------------- |
-| `id`     | INT     | Chave Primária (PK)                   |
-| `name`   | VARCHAR | Nome do item (ex: Airbag)             |
-| `car_id` | INT     | Chave Estrangeira (FK) para `cars.id` |
-
-## Convenções de Commit
-
-Os commits devem ser pequenos e escritos em inglês, seguindo o padrão semântico (Conventional Commits).
-
-Exemplos:
+Use commits pequenos em inglês seguindo Conventional Commits, por exemplo:
 
 - `feat: add car creation endpoint`
 - `fix: correct validation for car year`
