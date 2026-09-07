@@ -34,15 +34,15 @@
             <button class="btn btn--small" id="saveApiUrl">Salvar</button>
           </div>
           <small class="hint">
-            Ex.: <code>http://localhost:3000</code>. A URL é salva no navegador.
+            Use <code>http://localhost:3000</code> (com http://). A URL é salva no navegador.
           </small>
         </div>
       </section>
 
       <div class="app-grid">
         <!-- Cadastro -->
-        <section class="panel">
-          <h2>Cadastrar veículo</h2>
+        <section class="panel" id="formPanel">
+          <h2 id="formTitle">Cadastrar veículo</h2>
           <form id="createForm">
             <div class="form-row">
               <label for="brand">Marca</label>
@@ -61,10 +61,14 @@
               <input
                 type="text"
                 id="items"
+                required
                 placeholder="Ar-condicionado, Direção Hidráulica"
               />
             </div>
-            <button type="submit" class="btn">Cadastrar</button>
+            <button type="submit" class="btn" id="formSubmit">Cadastrar</button>
+            <button type="button" class="btn btn--ghost" id="cancelEdit" hidden>
+              Cancelar
+            </button>
           </form>
         </section>
 

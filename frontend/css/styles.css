@@ -304,7 +304,8 @@ a {
   font-size: 0.82rem;
 }
 #filterForm .btn,
-#clearFilter {
+#clearFilter,
+#cancelEdit {
   margin-right: 8px;
 }
 
@@ -349,6 +350,7 @@ a {
 .car-item .car-actions {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 /* Pagination */

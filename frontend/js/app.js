@@ -6,13 +6,32 @@ const LIMIT = 5;
 
 let currentPage = 1;
 let currentFilters = {};
+let editingId = null;
 
 // ---- Helpers de estado da API ----
+function defaultApiUrl() {
+  if (window.location.protocol.startsWith("http")) {
+    const { hostname, port, origin } = window.location;
+    if (
+      (hostname === "localhost" || hostname === "127.0.0.1") &&
+      (port === "3000" || port === "")
+    ) {
+      return origin;
+    }
+  }
+  return "http://localhost:3000";
+}
+
+function normalizeApiUrl(raw) {
+  let url = String(raw || "").trim();
+  if (!url) return defaultApiUrl();
+  if (/^\d+$/.test(url)) url = `http://localhost:${url}`;
+  else if (!/^https?:\/\//i.test(url)) url = "http://" + url;
+  return url.replace(/\/+$/, "").replace(/\/api\/v1$/i, "");
+}
+
 function getApiUrl() {
-  return (localStorage.getItem(STORAGE_KEY) || "http://localhost:3000").replace(
-    /\/+$/,
-    ""
-  );
+  return normalizeApiUrl(localStorage.getItem(STORAGE_KEY) || defaultApiUrl());
 }
 
 function setStatus(message, type = "") {
@@ -84,6 +103,7 @@ function renderCars(cars) {
       <div class="car-items" id="items-${car.id}">Itens: —</div>
       <div class="car-actions">
         <button class="btn btn--small" data-details="${car.id}">Detalhes</button>
+        <button class="btn btn--small" data-edit="${car.id}">Editar</button>
         <button class="btn btn--small btn--danger" data-delete="${car.id}">Excluir</button>
       </div>
     `;
@@ -101,6 +121,10 @@ function renderCars(cars) {
         target.textContent = "Itens: nenhum item cadastrado.";
       }
     });
+  });
+
+  list.querySelectorAll("[data-edit]").forEach((btn) => {
+    btn.addEventListener("click", () => startEdit(btn.getAttribute("data-edit")));
   });
 
   list.querySelectorAll("[data-delete]").forEach((btn) => {
@@ -122,10 +146,39 @@ function renderPagination(pages, active) {
   }
 }
 
-// ---- Cadastro ----
-async function createCar(event) {
-  event.preventDefault();
+function setFormMode(isEditing) {
+  document.getElementById("formTitle").textContent = isEditing
+    ? "Editar veículo"
+    : "Cadastrar veículo";
+  document.getElementById("formSubmit").textContent = isEditing
+    ? "Salvar alterações"
+    : "Cadastrar";
+  document.getElementById("cancelEdit").hidden = !isEditing;
+}
 
+function cancelEdit() {
+  editingId = null;
+  document.getElementById("createForm").reset();
+  setFormMode(false);
+}
+
+async function startEdit(id) {
+  const details = await fetchCarDetails(id);
+  if (!details) {
+    setStatus("Não foi possível carregar o veículo para edição.", "error");
+    return;
+  }
+
+  editingId = details.id;
+  document.getElementById("brand").value = details.brand || "";
+  document.getElementById("model").value = details.model || "";
+  document.getElementById("year").value = details.year || "";
+  document.getElementById("items").value = (details.items || []).join(", ");
+  setFormMode(true);
+  document.getElementById("formPanel").scrollIntoView({ behavior: "smooth" });
+}
+
+function getFormPayload() {
   const brand = document.getElementById("brand").value.trim();
   const model = document.getElementById("model").value.trim();
   const year = parseInt(document.getElementById("year").value, 10);
@@ -133,30 +186,49 @@ async function createCar(event) {
   const items = itemsRaw
     ? itemsRaw.split(",").map((i) => i.trim()).filter(Boolean)
     : [];
+  return { brand, model, year, items };
+}
 
-  const payload = { brand, model, year, items };
+// ---- Cadastro e edição ----
+async function saveCar(event) {
+  event.preventDefault();
+
+  const payload = getFormPayload();
+  const isEditing = Boolean(editingId);
+  const url = isEditing
+    ? `${getApiUrl()}/api/v1/cars/${editingId}`
+    : `${getApiUrl()}/api/v1/cars`;
 
   try {
-    const res = await fetch(`${getApiUrl()}/api/v1/cars`, {
-      method: "POST",
+    const res = await fetch(url, {
+      method: isEditing ? "PATCH" : "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
 
     const body = await res.json().catch(() => ({}));
 
-    if (res.status === 201) {
+    if (isEditing && (res.ok || res.status === 204)) {
+      setStatus("Veículo atualizado com sucesso!", "ok");
+      cancelEdit();
+      loadCars(currentPage);
+    } else if (!isEditing && res.status === 201) {
       setStatus("Veículo cadastrado com sucesso!", "ok");
       document.getElementById("createForm").reset();
       loadCars(1);
     } else {
+      const action = isEditing ? "atualizar" : "cadastrar";
       setStatus(
-        "Não foi possível cadastrar: " + (body.errors || body.message || `erro ${res.status}`),
+        `Não foi possível ${action}: ` +
+          (body.error || body.errors || body.message || `erro ${res.status}`),
         "error"
       );
     }
   } catch (err) {
-    setStatus("Erro ao conectar à API para cadastrar.", "error");
+    setStatus(
+      "Não foi possível conectar à API. Abra o sistema em http://localhost:3000/app.html e use a URL http://localhost:3000.",
+      "error"
+    );
     console.error(err);
   }
 }
@@ -212,13 +284,15 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("apiUrl").value = getApiUrl();
 
   document.getElementById("saveApiUrl").addEventListener("click", () => {
-    const val = document.getElementById("apiUrl").value.trim();
+    const val = normalizeApiUrl(document.getElementById("apiUrl").value);
     localStorage.setItem(STORAGE_KEY, val);
-    setStatus("URL da API salva.", "ok");
+    document.getElementById("apiUrl").value = val;
+    setStatus("URL da API salva: " + val, "ok");
     loadCars(1);
   });
 
-  document.getElementById("createForm").addEventListener("submit", createCar);
+  document.getElementById("createForm").addEventListener("submit", saveCar);
+  document.getElementById("cancelEdit").addEventListener("click", cancelEdit);
   document.getElementById("filterForm").addEventListener("submit", applyFilters);
   document.getElementById("clearFilter").addEventListener("click", clearFilters);
   document.getElementById("reload").addEventListener("click", () => loadCars(currentPage));
