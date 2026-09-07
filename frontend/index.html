@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CompassCar - Aluguel de Veículos</title>
+    <meta
+      name="description"
+      content="CompassCar - plataforma para gerenciamento e locação de veículos."
+    />
+    <link rel="stylesheet" href="./css/styles.css" />
+  </head>
+  <body>
+    <!-- Cabeçalho / Navegação -->
+    <header class="header">
+      <div class="container header__content">
+        <a href="#hero" class="logo">
+          <span class="logo__icon">🚗</span> CompassCar
+        </a>
+        <nav class="nav">
+          <a href="#recursos">Recursos</a>
+          <a href="#como-funciona">Como funciona</a>
+          <a href="#tecnologias">Tecnologias</a>
+          <a href="./app.html" class="btn btn--small">Acessar sistema</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero" id="hero">
+      <div class="container hero__content">
+        <div class="hero__text">
+          <h1>Gerencie sua frota de veículos com facilidade</h1>
+          <p>
+            O CompassCar centraliza o cadastro, a consulta e o controle dos
+            veículos disponíveis para locação em um só lugar.
+          </p>
+          <div class="hero__actions">
+            <a href="./app.html" class="btn">Acessar o sistema</a>
+            <a href="#recursos" class="btn btn--ghost">Saiba mais</a>
+          </div>
+        </div>
+        <div class="hero__art" aria-hidden="true">🚙💨</div>
+      </div>
+    </section>
+
+    <!-- Recursos -->
+    <section class="section" id="recursos">
+      <div class="container">
+        <h2 class="section__title">Recursos</h2>
+        <div class="cards">
+          <article class="card">
+            <div class="card__icon">➕</div>
+            <h3>Cadastrar veículos</h3>
+            <p>Adicione carros com marca, modelo, ano e itens opcionais.</p>
+          </article>
+          <article class="card">
+            <div class="card__icon">📋</div>
+            <h3>Listar e filtrar</h3>
+            <p>Consulte a frota com paginação e filtros por marca, modelo e ano.</p>
+          </article>
+          <article class="card">
+            <div class="card__icon">🔍</div>
+            <h3>Buscar por ID</h3>
+            <p>Veja os detalhes completos de um veículo específico.</p>
+          </article>
+          <article class="card">
+            <div class="card__icon">🗑️</div>
+            <h3>Remover veículos</h3>
+            <p>Exclua carros e seus itens associados do sistema.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Como funciona -->
+    <section class="section section--alt" id="como-funciona">
+      <div class="container">
+        <h2 class="section__title">Como funciona</h2>
+        <ol class="steps">
+          <li>
+            <span class="steps__num">1</span>
+            <div>
+              <h3>Suba a API</h3>
+              <p>Configure o banco MySQL e inicie o servidor Node.js.</p>
+            </div>
+          </li>
+          <li>
+            <span class="steps__num">2</span>
+            <div>
+              <h3>Acesse o sistema</h3>
+              <p>Abra a página do sistema e informe a URL da API.</p>
+            </div>
+          </li>
+          <li>
+            <span class="steps__num">3</span>
+            <div>
+              <h3>Gerencie a frota</h3>
+              <p>Cadastre, liste, busque e remova veículos em tempo real.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- Tecnologias -->
+    <section class="section" id="tecnologias">
+      <div class="container">
+        <h2 class="section__title">Tecnologias</h2>
+        <ul class="tech">
+          <li>Node.js</li>
+          <li>Express</li>
+          <li>MySQL</li>
+          <li>HTML5</li>
+          <li>CSS3</li>
+          <li>JavaScript</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- CTA final -->
+    <section class="cta">
+      <div class="container">
+        <h2>Pronto para começar?</h2>
+        <p>Acesse o sistema e comece a gerenciar seus veículos agora.</p>
+        <a href="./app.html" class="btn">Acessar o sistema</a>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="container">
+        <p>CompassCar © 2026 — Projeto Integrador SENAC · Grupo 23</p>
+      </div>
+    </footer>
+  </body>
+</html>
