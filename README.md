@@ -128,6 +128,6 @@ Use commits pequenos em inglês seguindo Conventional Commits, por exemplo:
 - [Wagner_Suzano](https://github.com/WagnerSuzano2)
 - [Iago Viana Carvalho](https://github.com/oiagoviana)
 - [Roberto da Rosa Borges Fonseca Lima](https://github.com/robertorbfl)
-- [Igor de Castro Brambila]
-- [Romulo Fraga de Oliveira]
+- Igor de Castro Brambila
+- Romulo Fraga de Oliveira
 - [Joao Ricardo Vano Ferreira](https://github.com/jorikardx)
