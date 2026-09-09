@@ -131,3 +131,4 @@ Use commits pequenos em inglês seguindo Conventional Commits, por exemplo:
 - Igor de Castro Brambila
 - Romulo Fraga de Oliveira
 - [Joao Ricardo Vano Ferreira](https://github.com/jorikardx)
+- [Rádisson Calmon de Almeida Gomes (https://github.com/radissonc)
